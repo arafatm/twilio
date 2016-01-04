@@ -92,7 +92,7 @@ install_postgres() {
   msg "restart postgresql"
   sudo /etc/init.d/postgresql restart
 
-  INSTALLED += "- postgres"
+  INSTALLED+="- postgres"
 }
 
 install_rbenv() {
@@ -119,21 +119,22 @@ install_rbenv() {
 
   #LATEST='2.1.5'
 
+
   # Install a ruby
   if [[ ! $(ruby -v) =~ "ruby $LATEST" ]]; then 
-    CONFIGURE_OPTS="--disable-install-doc" $rbenv install -v $LATEST 
+    echo "Installing ruby $LATEST"
+    CONFIGURE_OPTS="--disable-install-doc" $rbenv install -s -v $LATEST 
     $rbenv global  $LATEST
     $rbenv rehash
-    echo "Installed ruby $LATEST"
   else
     echo "ruby $LATEST already installed"
   fi
 
   INSTALLED+="- rbenv"
 
-  gem install bundler
+  $HOME/.rbenv/shims/gem install bundler
 
-  bundle install --path vendor
+  cd /vagrant && $HOME/.rbenv/shims/bundle install --path vendor
 
 }
 
@@ -149,13 +150,11 @@ install_dotfiles() {
     git pull
   fi
 
-  source $HOME/.bashrc
-  
   INSTALLED+="- dotfiles"
 }
 
 congrats() {
-  echo "$INSTALLED"
+  echo $INSTALLED
 }
 
 apt_3rd_party
